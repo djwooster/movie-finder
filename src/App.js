@@ -24,6 +24,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [practice, usePractice] = useState(null);
 
   const handleSelectMovie = (id) => {
     setSelectedId((previd) => (previd === id ? null : id));
