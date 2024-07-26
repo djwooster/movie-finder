@@ -3,10 +3,16 @@ import { KEY } from "../App";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
 
-function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
+function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [movieInfo, setMovieInfo] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
+
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
 
   // * destructuring movie info object into separate variables
   const {
@@ -51,6 +57,14 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
     getMovieDetails();
   }, [selectedId]);
 
+  useEffect(() => {
+    if (!title) return;
+    document.title = title;
+    return () => {
+      document.title = "Movie Finder";
+    };
+  }, [title]);
+
   return (
     <>
       {isLoading ? (
@@ -76,14 +90,26 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
           </header>
           <section>
             <div className="rating">
-              <StarRating
-                maxRating={10}
-                color="gold"
-                onSetRating={setUserRating}
-              />
-              <button onClick={handleAdd} className="btn-add">
-                Add to Watched
-              </button>
+              {!isWatched ? (
+                <>
+                  <StarRating
+                    maxRating={10}
+                    color="gold"
+                    onSetRating={setUserRating}
+                  />
+
+                  {userRating > 0 && (
+                    <button
+                      onClick={() => handleAdd(selectedId)}
+                      className="btn-add"
+                    >
+                      Add to Watched
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>Rated {watchedUserRating}</p>
+              )}
             </div>
             <p>{plot}</p>
             <p>Starring {actors}</p>

@@ -24,10 +24,13 @@ export default function App() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const [practice, usePractice] = useState(null);
 
   const handleSelectMovie = (id) => {
     setSelectedId((previd) => (previd === id ? null : id));
+  };
+
+  const handleRemoveWatched = (id) => {
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   };
 
   const handleCloseMovie = () => {
@@ -42,6 +45,14 @@ export default function App() {
     setQuery("");
     handleCloseMovie();
   };
+
+  useEffect(() => {
+    if (selectedId) {
+      window.title = selectedId;
+    } else {
+      window.title = "Movie App";
+    }
+  }, [selectedId]);
 
   useEffect(
     function () {
@@ -106,11 +117,15 @@ export default function App() {
               handleSelectMovie={handleSelectMovie}
               onCloseMovie={handleCloseMovie}
               onAddWatched={handleAddWatched}
+              watched={watched}
             />
           ) : (
             <>
               <WatchedSummary watched={watched} />
-              <WatchedList watched={watched} />
+              <WatchedList
+                watched={watched}
+                handleRemoveWatched={handleRemoveWatched}
+              />
             </>
           )}
           {/* <StarRating maxRating={7} color={"#FA9E34"} size={"0 0 20 20"} /> */}
